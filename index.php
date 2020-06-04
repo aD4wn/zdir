@@ -22,10 +22,12 @@ require("./config.php");
 include_once("./functions/zdir.class.php");
 //获取密码
 $password = $config['password'];
+//获取用户名
+$username = $config['username'];
 //如果开启了验证
 if(@$config['auth'] === TRUE){
 	//基本验证
-	if ( ($_SERVER['PHP_AUTH_PW'] !== $password) || ($_SERVER['PHP_AUTH_USER'] !== 'admin') ){
+	if ( ($_SERVER['PHP_AUTH_PW'] !== $password) || ($_SERVER['PHP_AUTH_USER'] !== $username) ){
 		header('WWW-Authenticate: Basic realm="Please verify."');
 		header('HTTP/1.0 401 Unauthorized');
 		exit('权限不足！');
@@ -37,10 +39,22 @@ if((!isset($c)) || ($c == '')){
 	//载入主页
 	include_once("./functions/home.php");
 }
-//不允许放的控制器
-else if($c == 'indexes'){
-	echo '非法请求！';
-	exit;
+//不允许访问的控制器
+// else if($c == 'indexes'){
+// 	echo '非法请求！';
+// 	exit;
+// }
+//如果是文件管理器
+else if($c == 'admin') {
+	//如果当前目录存在
+	if( file_exists('./functions/admin.php') ) {
+		header("Location: ./functions/admin.php");
+		exit;
+	}
+	else{
+		header("Location: ./zdir/functions/admin.php");
+		exit;
+	}
 }
 else{
 	include_once("./functions/".$c.'.php');

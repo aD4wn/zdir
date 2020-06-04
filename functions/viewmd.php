@@ -1,6 +1,12 @@
 <?php
-	include_once("./zdir.class.php");
-	include_once("./Parsedown.php");
+	//载入文件
+	if ( $config['thedir'] == '' ){
+		include_once(__DIR__."/Parsedown.php");
+	}
+	else{
+		include_once($config['thedir']."/zdir/functions/Parsedown.php");
+	}
+	//exit;
 	$Parsedown = new Parsedown();
 	@$file = $_GET['file'];
 
@@ -21,7 +27,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link href="https://cdn.bootcss.com/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://libs.xiaoz.top/layui-v2.2.5/layui/css/layui.css">
-	<link rel="stylesheet" href="../static/md.css">
+	<link rel="stylesheet" href="./static/md.css">
 </head>
 <body>
 	<div id="container" class = "layui-bg-gray">

@@ -194,6 +194,8 @@
 			$thedir = __DIR__;
 			$thedir = str_replace("\\","/",$thedir);
 			$thedir = str_replace("/functions","",$thedir);
+			//将/zdir替换为空
+			$thedir = preg_replace("/\/zdir$/",'',$thedir);
 			#$thedir = str_replace("");
 
 			//如果文件不存在
@@ -431,11 +433,11 @@
 		if( stristr($os,'WINNT') ){
 			if($type === TRUE) {
 				//GB2312转UTF-8
-				$str = iconv('gb2312' , 'utf-8' , $str );
+				$str = iconv('gb2312' , 'utf-8' , $str ) ? iconv('gb2312' , 'utf-8' , $str ) : $str;
 			}
 			else if($type === FALSE) {
 				//UTF-8转GB2312
-				@$str = iconv('utf-8' , 'gb2312' , $str );
+				@$str = iconv('utf-8' , 'gb2312' , $str ) ? iconv('utf-8' , 'gb2312' , $str ) : $str;
 			}
 			
 			//echo 'dsdsd';

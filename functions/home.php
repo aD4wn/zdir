@@ -1,9 +1,17 @@
 <?php
 	@$admin = $_GET['admin'];
-	//获取当前目录
-	$thedir = __DIR__;
-	$thedir = str_replace("\\",'/',$thedir);
-	$thedir = str_replace("functions",'',$thedir);
+	/**
+	获取需要读取的目录
+	*/
+	//如果没有设置thedir，则默认读取当前路径
+	if( $config['thedir'] == '' ) {
+		$thedir = __DIR__;
+		$thedir = str_replace("\\",'/',$thedir);
+		$thedir = str_replace("functions",'',$thedir);
+	}
+	else{
+		$thedir = $config['thedir'];
+	}
 	
 	$i = 0;
 
@@ -43,7 +51,7 @@
 	//如果目录不存在
 	else if(!is_dir($rel_path)){
 		echo '目录不存在，3s后返回首页！';
-		header("Refresh:3;url=index.php");
+		header("Refresh:3;url=/");
 		exit;
 	}
 	else{
@@ -89,7 +97,7 @@
 		
 		#var_dump($dirarr);
 		if($dirnum == 2) {
-			$updir = 'index.php';
+			$updir = '/';
 		}
 		else{
 			$updir = '';
@@ -99,7 +107,7 @@
 				$updir = $updir.'/'.$dirarr[$i];
 				
 			}
-			$updir = 'index.php?dir='.$updir;
+			$updir = '/?dir='.$updir;
 		}
 		return $updir;
 	}
@@ -135,7 +143,7 @@
 							}
 						?>
 						
-						<a href="./index.php?dir=<?php echo $remenu; ?>"><?php echo $menu; ?></a> / 
+						<a href="./?dir=<?php echo $remenu; ?>"><?php echo $menu; ?></a> / 
 						<?php } ?>
 					</p>
 				</div>
@@ -151,7 +159,7 @@
 					  <div class="layui-colla-item">
 					    <h2 class="layui-colla-title">使用说明（必看）</h2>
 					    <div class="layui-colla-content">
-						    <iframe src="<?php echo './functions/readme.php?file='.$readme; ?>" width="100%" height="600px" name="" frameborder = "0" align="middle"></iframe>
+						    <iframe src="<?php echo './?c=readme&file='.$readme; ?>" width="100%" height="600px" name="" frameborder = "0" align="middle"></iframe>
 					    </div>
 					  </div>
 					</div>
@@ -169,10 +177,10 @@
 		    	<div class="layui-col-lg12">
 			    	<table class="layui-table" lay-skin="line">
 					  	<colgroup>
-					    <col width="400">
-					    <col width="200">
-					    <col width="200">
-					    <col width="180">
+					    <col width="560">
+					    <col width="100">
+					    <col width="160">
+					    <col width="160">
 					    <col>
 					  </colgroup>
 					  <thead>
@@ -181,7 +189,7 @@
 					      <th class = "layui-hide-xs"></th>
 					      <th class = "layui-hide-xs">修改时间</th>
 					      <th>文件大小</th>
-					      <th class = "layui-hide-xs">操作</th>
+					      <th class = "layui-hide-xs layui-hide-sm layui-show-md-block">操作</th>
 					    </tr> 
 					  </thead>
 					  <tbody>
@@ -189,10 +197,11 @@
 						    //防止中文乱码
 						    //$showdir = con_coding($showdir);
 						    $fullpath = $thedir.'/'.$dir.'/'.$showdir;
-						    
+						    //去掉多余的斜杠
 						    $fullpath = str_replace("\\","\/",$fullpath);
 						    $fullpath = str_replace("//","/",$fullpath);
-						    //$fullpath = con_coding($fullpath,FALSE);
+						    $fullpath = str_replace("//","/",$fullpath);
+						    //$fullpath = con_coding($fullpath);
 						    
 						    //var_dump($fullpath);
 						    //获取文件修改时间
@@ -211,7 +220,7 @@
 								    $url = $updir;
 							    }
 							    else{
-								    $url = "./index.php?dir=".$dir.'/'.$showdir;
+								    $url = "./?dir=".$dir.'/'.$showdir;
 							    }
 							    
 							    $ico = "fa fa-folder-open";
@@ -258,7 +267,7 @@
 								    $url = $updir;
 							    }
 							    else{
-								    $url = "./index.php?dir=".$dir.'/'.$showdir;
+								    $url = "./?dir=".$dir.'/'.$showdir;
 							    }
 							    
 							    $ico = "fa fa-folder-open";
@@ -273,22 +282,24 @@
 							    <?php
 							    	$showdir = con_coding($showdir);
 							    	$fullpath = con_coding($fullpath);
+							    	//echo $fullpath;
 							    	$url = con_coding($url);
 							    ?>
 							    <!--判断文件是否是图片-->
 							    <?php if(($suffix == 'jpg') || ($suffix == 'jpeg') || ($suffix == 'png') || ($suffix == 'gif') || ($suffix == 'bmp')){
 
 							   	?>
-							   	<a href="<?php echo $url ?>" id = "url<?php echo $i; ?>" onmouseover = "showimg(<?php echo $i; ?>,'<?php echo $url; ?>')" onmouseout = "hideimg(<?php echo $i; ?>)"><i class="<?php echo $ico; ?>"></i> <?php echo $showdir; ?></a>
+							   	<a class = "fname1" href="<?php echo $url ?>" id = "url<?php echo $i; ?>" onmouseover = "showimg(<?php echo $i; ?>,'<?php echo $url; ?>')" onmouseout = "hideimg(<?php echo $i; ?>)"><i class="<?php echo $ico; ?>"></i> <?php echo $showdir; ?></a>
 							   	<div class = "showimg" id = "show<?php echo $i; ?>"><img src="" id = "imgid<?php echo $i; ?>"></div>
 							   	<!--如果是.exe文件-->
 							   	<?php }elseif($zdir->is_exe($fullpath)){ ?>
-								<a href="<?php echo $url ?>" id = "url<?php echo $i; ?>"><i class="<?php echo $ico; ?>"></i> <?php echo $showdir; ?></a>
+								<a class = "fname1" href="<?php echo $url ?>" id = "url<?php echo $i; ?>"><i class="<?php echo $ico; ?>"></i> <?php echo $showdir; ?></a>
 							   	<!--.exe文件END-->
 							   	<?php }else{ ?>
-							    <a href="<?php echo $url ?>" id = "url<?php echo $i; ?>"><i class="<?php echo $ico; ?>"></i> <?php echo $showdir; ?></a>
+							    <a class = "fname1" href="<?php echo $url ?>" id = "url<?php echo $i; ?>"><i class="<?php echo $ico; ?>"></i> <?php echo $showdir; ?></a>
 							    <?php } ?>
 						    </td>
+							<!-- 查看HASH例 -->
 						    <td id = "info" class = "layui-hide-xs">
 							    <!--如果是文件-->
 							    <?php if($type == 'file'){ ?>
@@ -298,31 +309,35 @@
 						    </td>
 						    <td class = "layui-hide-xs"><?php echo $ctime; ?></td>
 						    <td><?php echo $fsize; ?></td>
+							<!-- 操作例 -->
 						    <td class = "layui-hide-xs">
-							    <!--复制链接-->
-							    <?php if($fsize != '-'){ ?>
-								<a href="javascript:;" class = "layui-btn layui-btn-xs layui-btn-normal" title = "复制链接" onclick = "copy('<?php echo $url ?>')"><i class="fa fa-copy"></i></a>
-								<a download href="<?php echo $url ?>" class = "layui-btn layui-btn-xs layui-btn-normal" title = "点击下载"><i class="fa fa-download"></i></a>
-							    <?php } ?>
-							    <!--如果是音乐文件-->
-							    <?php if( $zdir->music($url) ) { ?>
-								<a class = "layui-btn layui-btn-xs layui-btn-normal" title = "点此播放" href="javascript:;" onclick = "music('<?php echo $url ?>')"><i class="fa fa-play-circle"></i></a>
-							    <?php } ?>
-							    <!--音乐文件END-->
-							    <!--如果是markdown文件-->
-							    <?php if(($suffix == 'md') && ($suffix != null)){ ?>
-								<a href="javascript:;" class = "layui-btn layui-btn-xs layui-btn-normal" onclick = "newmd('<?php echo $fullpath; ?>')" title = "点击查看"><i class="fa fa-eye"></i></a> 
-							    <?php }else if( $zdir->video($url) ){ ?>
-								<a class = "layui-btn layui-btn-xs layui-btn-normal" title = "点此播放" href="javascript:;" onclick = "video('<?php echo $url ?>')"><i class="fa fa-play-circle"></i></a>
-								<!--文本查看器-->
-							    <?php }
-							    else if( $zdir->is_text($url) ){ ?>
-								<a class = "layui-btn layui-btn-xs layui-btn-normal" title = "点此查看" href="javascript:;" onclick = "viewtext('<?php echo $fullpath; ?>')"><i class="fa fa-eye"></i></a>
-							    <?php }else if( $zdir->office($url) ) { ?>
-							    <!--查看Office-->
-								<a class = "layui-btn layui-btn-xs layui-btn-normal" href="javascript:;" title = "点此查看" onclick = "office('<?php echo $url ?>')"><i class="fa fa-eye"></i></a>
-							    <?php } ?>
+								<div class = "layui-hide-sm layui-show-md-block">
+									<!--复制链接-->
+									<?php if($fsize != '-'){ ?>
+									<a href="javascript:;" class = "layui-btn layui-btn-xs layui-btn-normal" title = "复制链接" onclick = "copy('<?php echo $url ?>')"><i class="fa fa-copy"></i></a>
+									<a download href="<?php echo $url ?>" class = "layui-btn layui-btn-xs layui-btn-normal" title = "点击下载"><i class="fa fa-download"></i></a>
+									<?php } ?>
+									<!--如果是音乐文件-->
+									<?php if( $zdir->music($url) ) { ?>
+									<a class = "layui-btn layui-btn-xs layui-btn-normal" title = "点此播放" href="javascript:;" onclick = "music('<?php echo $url ?>')"><i class="fa fa-play-circle"></i></a>
+									<?php } ?>
+									<!--音乐文件END-->
+									<!--如果是markdown文件-->
+									<?php if(($suffix == 'md') && ($suffix != null)){ ?>
+									<a href="javascript:;" class = "layui-btn layui-btn-xs layui-btn-normal" onclick = "newmd('<?php echo $fullpath; ?>')" title = "点击查看"><i class="fa fa-eye"></i></a> 
+									<?php }else if( $zdir->video($url) ){ ?>
+									<a class = "layui-btn layui-btn-xs layui-btn-normal" title = "点此播放" href="javascript:;" onclick = "video('<?php echo $url ?>')"><i class="fa fa-play-circle"></i></a>
+									<!--文本查看器-->
+									<?php }
+									else if( $zdir->is_text($url) ){ ?>
+									<a class = "layui-btn layui-btn-xs layui-btn-normal" title = "点此查看" href="javascript:;" onclick = "viewtext('<?php echo $fullpath; ?>')"><i class="fa fa-eye"></i></a>
+									<?php }else if( $zdir->office($url) ) { ?>
+									<!--查看Office-->
+									<a class = "layui-btn layui-btn-xs layui-btn-normal" href="javascript:;" title = "点此查看" onclick = "office('<?php echo $url ?>')"><i class="fa fa-eye"></i></a>
+									<?php } ?>
+								</div>
 						    </td>
+							<!-- 操作例END -->
 					    </tr>
 					    <?php } ?>
 						
